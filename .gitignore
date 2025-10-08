@@ -146,3 +146,27 @@ pgdata/
 # OS
 .DS_Store
 Thumbs.db
+
+# Data
+Data/
+
+#tmp
+tmp/
+
+# logs
+logs/
+
+# backups
+backups/
+#minio-data 
+minio-data/
+#example
+example/
+#migration_poc
+migration_poc/
+#test_api.py
+test_api.py
+#test_complete.py
+test_complete.py
+#test_kafka_consumer.py
+test_kafka_consumer.py
