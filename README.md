@@ -20,8 +20,9 @@ Este proyecto implementa una solución completa para migración de datos que inc
 - Limpieza completa con TRUNCATE para evitar duplicados
 
 ### 2. API REST para Datos en Línea
-- Endpoint `/api/batch-transaction/` para recibir lotes de 1-1000 registros
-- Validación automática contra diccionario de datos
+- Endpoint `/api/ingest/` para ingesta en tiempo real vía Kafka (1-1000 registros)
+- Endpoint alternativo `/api/batch-transaction/` para inserción directa (1-1000 registros)
+- Validación automática contra diccionario de datos en ambos flujos
 - Soporte para múltiples tablas (hired_employees, departments, jobs)
 - Aplicación de reglas de calidad de datos
 
@@ -92,8 +93,32 @@ La versión TRUNCATE incluye:
 
 ## API Endpoints
 
+### POST /api/ingest/
+Ingesta en tiempo real: valida y publica registros en Kafka para procesamiento asíncrono.
+
+Requiere API key (ver sección "Seguridad de la API").
+
+**Request Body:**
+```json
+{
+  "table": "jobs",
+  "records": [
+    { "id": 500, "name": "mytest" }
+  ]
+}
+```
+
+**Response (202 Accepted):**
+```json
+{
+  "accepted": 1,
+  "rejected": 0,
+  "errors": []
+}
+```
+
 ### POST /api/batch-transaction/
-Recibe lotes de transacciones para insertar en la base de datos.
+Inserción directa: procesa lotes y escribe en la base de datos de forma síncrona.
 
 **Request Body:**
 ```json
@@ -206,7 +231,20 @@ python test_complete.py
 curl http://localhost:8000/api/health/
 ```
 
-2. **Enviar lote de departamentos**
+2. **Ingesta en tiempo real (Kafka)**
+```bash
+curl -X POST http://localhost:8000/api/ingest/ \
+  -H "Authorization: Bearer TU_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "table": "jobs",
+    "records": [
+      {"id": 500, "name": "mytest"}
+    ]
+  }'
+```
+
+3. **Enviar lote de departamentos (inserción directa)**
 ```bash
 curl -X POST http://localhost:8000/api/batch-transaction/ \
   -H "Content-Type: application/json" \
@@ -218,17 +256,17 @@ curl -X POST http://localhost:8000/api/batch-transaction/ \
   }'
 ```
 
-3. **Consultar logs de migración**
+4. **Consultar logs de migración**
 ```bash
 curl http://localhost:8000/api/migration-logs/
 ```
 
-4. **Crear backup de una tabla**
+5. **Crear backup de una tabla**
 ```bash
 curl -X POST http://localhost:8000/api/backup/hired_employees/
 ```
 
-5. **Restaurar tabla desde backup específico**
+6. **Restaurar tabla desde backup específico**
 ```bash
 curl -X POST http://localhost:8000/api/restore/hired_employees/ \
   -H "Content-Type: application/json" \
@@ -238,7 +276,7 @@ curl -X POST http://localhost:8000/api/restore/hired_employees/ \
   }'
 ```
 
-6. **Restaurar tabla desde el último backup (automático)**
+7. **Restaurar tabla desde el último backup (automático)**
 ```bash
 curl -X POST http://localhost:8000/api/restore/hired_employees/ \
   -H "Content-Type: application/json" \
