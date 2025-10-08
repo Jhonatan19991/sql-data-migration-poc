@@ -779,22 +779,3 @@ curl "http://localhost:8000/api/metrics/departments-above-average/"
 curl "http://localhost:8000/api/metrics/employees-by-quarter/?year=2021"
 curl "http://localhost:8000/api/metrics/departments-above-average/?year=2021"
 ```
-
-📋 **Documentación completa**: Ver `examples/powerbi_metrics.md`
-
-## Próximas Características
-
-- [x] Backup en formato PARQUET
-- [x] Restauración desde backups
-- [x] Integración con Kafka
-- [x] Schema Registry
-- [x] Sistema de autenticación con API Keys
-- [x] Rate limiting y monitoreo de seguridad
-- [x] Validación robusta y logging de errores
-- [x] Métricas optimizadas para PowerBI
-- [ ] Métricas y monitoreo avanzado
-- [ ] Backup en formato AVRO
-- [ ] Restauración selectiva (filtros)
-- [ ] Compresión de backups
-- [ ] Integración con sistemas de SIEM
-- [ ] Alertas automáticas de seguridad
